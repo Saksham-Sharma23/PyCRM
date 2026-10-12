@@ -1,0 +1,19 @@
+# Local development database. Start with: docker compose up -d
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: pycrm
+      POSTGRES_PASSWORD: pycrm
+      POSTGRES_DB: pycrm
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pycrm"]
+      interval: 5s
+      retries: 5
+
+volumes:
+  pgdata:

@@ -1,0 +1,31 @@
+{% extends "auth/_layout.html" %}
+
+{% block title %}Sign up · {{ app_name }}{% endblock %}
+{% block heading %}Create your account{% endblock %}
+
+{% block form %}
+<form method="post" action="/signup" class="mt-6 space-y-4">
+  <label class="block text-sm">
+    <span class="text-slate-700">Name</span>
+    <input name="name" value="{{ name or '' }}" required autofocus maxlength="100"
+           class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-indigo-500 focus:outline-none">
+  </label>
+  <label class="block text-sm">
+    <span class="text-slate-700">Email</span>
+    <input name="email" type="email" value="{{ email or '' }}" required
+           class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-indigo-500 focus:outline-none">
+  </label>
+  <label class="block text-sm">
+    <span class="text-slate-700">Password</span>
+    <input name="password" type="password" required minlength="8"
+           class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-indigo-500 focus:outline-none">
+    <span class="mt-1 block text-xs text-slate-500">At least 8 characters.</span>
+  </label>
+  <button class="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+    Sign up
+  </button>
+</form>
+<p class="mt-6 text-center text-sm text-slate-600">
+  Already have an account? <a href="/login" class="text-indigo-600 hover:underline">Log in</a>
+</p>
+{% endblock %}

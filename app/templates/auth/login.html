@@ -1,0 +1,26 @@
+{% extends "auth/_layout.html" %}
+
+{% block title %}Log in · {{ app_name }}{% endblock %}
+{% block heading %}Log in{% endblock %}
+
+{% block form %}
+<form method="post" action="/login" class="mt-6 space-y-4">
+  <input type="hidden" name="next" value="{{ next }}">
+  <label class="block text-sm">
+    <span class="text-slate-700">Email</span>
+    <input name="email" type="email" value="{{ email or '' }}" required autofocus
+           class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-indigo-500 focus:outline-none">
+  </label>
+  <label class="block text-sm">
+    <span class="text-slate-700">Password</span>
+    <input name="password" type="password" required
+           class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-indigo-500 focus:outline-none">
+  </label>
+  <button class="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+    Log in
+  </button>
+</form>
+<p class="mt-6 text-center text-sm text-slate-600">
+  No account? <a href="/signup" class="text-indigo-600 hover:underline">Sign up</a>
+</p>
+{% endblock %}

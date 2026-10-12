@@ -1,0 +1,38 @@
+{# One row of the users table. Rendered in the full page and returned alone after an HTMX update. #}
+{% set is_self = u.id == user.id %}
+<tr id="user-{{ u.id }}" class="border-t border-slate-100">
+  <td class="px-4 py-3 font-medium">
+    {{ u.name }}{% if is_self %} <span class="text-xs font-normal text-slate-400">(you)</span>{% endif %}
+  </td>
+  <td class="px-4 py-3 text-slate-600">{{ u.email }}</td>
+  <td class="px-4 py-3">
+    {% if is_self %}
+      {{ u.role.value|replace('_', ' ')|title }}
+    {% else %}
+      <select name="role" aria-label="Role for {{ u.name }}"
+              hx-post="/users/{{ u.id }}/role" hx-target="#user-{{ u.id }}" hx-swap="outerHTML"
+              class="rounded-lg border border-slate-300 px-2 py-1">
+        {% for r in roles %}
+          <option value="{{ r.value }}" {% if r == u.role %}selected{% endif %}>{{ r.value|replace('_', ' ')|title }}</option>
+        {% endfor %}
+      </select>
+    {% endif %}
+  </td>
+  <td class="px-4 py-3">
+    {% if u.is_active %}
+      <span class="rounded-full bg-green-50 px-2 py-0.5 text-xs text-green-700">Active</span>
+    {% else %}
+      <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500">Inactive</span>
+    {% endif %}
+  </td>
+  <td class="px-4 py-3 text-right">
+    {% if not is_self %}
+      <button hx-post="/users/{{ u.id }}/active"
+              hx-vals='{"is_active": "{{ "false" if u.is_active else "true" }}"}'
+              hx-target="#user-{{ u.id }}" hx-swap="outerHTML"
+              class="text-sm {{ 'text-red-600' if u.is_active else 'text-indigo-600' }} hover:underline">
+        {{ "Deactivate" if u.is_active else "Activate" }}
+      </button>
+    {% endif %}
+  </td>
+</tr>

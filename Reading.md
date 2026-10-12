@@ -1,0 +1,5 @@
+What Uvicorn does and why FastAPI needs it (we've covered this)
+How a request reaches home() in routers/home.py (Lesson 1)
+Why settings live in .env instead of in the code (config.py)
+What a database session is and why we create one per request (database.py)
+Why the health tests use a FakeSession instead of a real database (test_home.py)
