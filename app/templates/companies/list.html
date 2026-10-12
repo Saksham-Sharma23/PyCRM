@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Companies · {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between">
+  <h1 class="text-2xl font-semibold">Companies</h1>
+  <a href="/companies/new" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">New company</a>
+</div>
+
+{# Live search: typing (or changing the filter) asks the server for just the results table. #}
+<form method="get" action="/companies" class="mt-6 flex flex-wrap gap-3"
+      hx-get="/companies" hx-target="#results" hx-push-url="true"
+      hx-trigger="input delay:300ms, submit">
+  <input type="search" name="q" value="{{ q }}" placeholder="Search name, industry or website…" aria-label="Search companies"
+         class="w-full max-w-sm rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none">
+  <select name="industry" aria-label="Filter by industry" class="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+    <option value="">All industries</option>
+    {% for name in industries %}
+      <option value="{{ name }}" {% if name == industry %}selected{% endif %}>{{ name }}</option>
+    {% endfor %}
+  </select>
+  <noscript><button class="rounded-lg border px-3 py-2 text-sm">Search</button></noscript>
+</form>
+
+<div id="results" class="mt-4">
+  {% include "partials/company_results.html" %}
+</div>
+{% endblock %}

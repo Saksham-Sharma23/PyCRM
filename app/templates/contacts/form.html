@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% from "macros/forms.html" import field, textarea, error_alert %}
+
+{% set heading = "Edit " ~ contact.full_name if contact else "New contact" %}
+{% block title %}{{ heading }} · {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-2xl">
+  <a href="{{ '/contacts/' ~ contact.id if contact else '/contacts' }}" class="text-sm text-slate-500 hover:text-slate-800">← Back</a>
+  <h1 class="mt-2 text-2xl font-semibold">{{ heading }}</h1>
+
+  <form method="post" action="{{ '/contacts/' ~ contact.id ~ '/edit' if contact else '/contacts/new' }}"
+        class="mt-6 space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    {{ error_alert(error) }}
+    <div class="grid gap-4 sm:grid-cols-2">
+      {{ field("first_name", "First name", values, required=true, maxlength=100) }}
+      {{ field("last_name", "Last name", values, required=true, maxlength=100) }}
+      {{ field("email", "Email", values, type="email", maxlength=255) }}
+      {{ field("phone", "Phone", values, type="tel", maxlength=50) }}
+      {{ field("job_title", "Job title", values, maxlength=100) }}
+      <label class="block text-sm">
+        <span class="text-slate-700">Company</span>
+        {# values come from the DB (int) or a re-shown form (str), so compare as strings. #}
+        {% set selected = values.get("company_id")|string %}
+        <select name="company_id" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-indigo-500 focus:outline-none">
+          <option value="">— No company —</option>
+          {% for company in companies %}
+            <option value="{{ company.id }}" {% if company.id|string == selected %}selected{% endif %}>{{ company.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+    {{ textarea("notes", "Notes", values) }}
+    <div class="flex justify-end gap-3">
+      <a href="{{ '/contacts/' ~ contact.id if contact else '/contacts' }}" class="rounded-lg px-4 py-2 text-sm text-slate-600 hover:bg-slate-100">Cancel</a>
+      <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+        {{ "Save changes" if contact else "Create contact" }}
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{# The contacts table. Rendered inside the list page, and returned alone for HTMX search/pagination. #}
+<div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+  <table class="w-full text-left text-sm">
+    <thead class="bg-slate-50 text-xs uppercase text-slate-500">
+      <tr>
+        <th class="px-4 py-3">Name</th>
+        <th class="px-4 py-3">Company</th>
+        <th class="px-4 py-3">Job title</th>
+        <th class="px-4 py-3">Email</th>
+        {% if user.is_admin %}<th class="px-4 py-3">Owner</th>{% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for contact in results.items %}
+        <tr class="border-t border-slate-100 hover:bg-slate-50">
+          <td class="px-4 py-3 font-medium"><a href="/contacts/{{ contact.id }}" class="text-indigo-600 hover:underline">{{ contact.full_name }}</a></td>
+          <td class="px-4 py-3 text-slate-600">{{ contact.company.name if contact.company else "—" }}</td>
+          <td class="px-4 py-3 text-slate-600">{{ contact.job_title or "—" }}</td>
+          <td class="px-4 py-3 text-slate-600">{{ contact.email or "—" }}</td>
+          {% if user.is_admin %}<td class="px-4 py-3 text-slate-600">{{ contact.owner.name }}</td>{% endif %}
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="5" class="px-4 py-8 text-center text-slate-500">
+            {% if q or selected_company %}No contacts match your search.{% else %}No contacts yet. <a href="/contacts/new" class="text-indigo-600 hover:underline">Add your first one</a>.{% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% with base_url = "/contacts" %}{% include "partials/pagination.html" %}{% endwith %}
+</div>

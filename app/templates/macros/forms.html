@@ -1,0 +1,26 @@
+{# Reusable form fields. Import with: {% from "macros/forms.html" import field, textarea %} #}
+
+{% set input_class = "mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-indigo-500 focus:outline-none" %}
+
+{% macro field(name, label, values, type="text", required=false, maxlength=none, placeholder="") %}
+<label class="block text-sm">
+  <span class="text-slate-700">{{ label }}{% if required %} <span class="text-red-500">*</span>{% endif %}</span>
+  <input name="{{ name }}" type="{{ type }}" value="{{ values.get(name) or '' }}"
+         {% if required %}required{% endif %} {% if maxlength %}maxlength="{{ maxlength }}"{% endif %}
+         {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+         class="{{ input_class }}">
+</label>
+{% endmacro %}
+
+{% macro textarea(name, label, values, rows=4) %}
+<label class="block text-sm">
+  <span class="text-slate-700">{{ label }}</span>
+  <textarea name="{{ name }}" rows="{{ rows }}" class="{{ input_class }}">{{ values.get(name) or '' }}</textarea>
+</label>
+{% endmacro %}
+
+{% macro error_alert(error) %}
+{% if error %}
+  <p class="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">{{ error }}</p>
+{% endif %}
+{% endmacro %}

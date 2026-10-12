@@ -12,7 +12,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from app.core.config import settings
 from app.core.deps import LoginRequired
 from app.core.templating import templates
-from app.routers import auth, home, users
+from app.routers import auth, companies, contacts, home, users
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 SESSION_MAX_AGE = 60 * 60 * 24 * 7  # one week
@@ -64,6 +64,8 @@ def create_app() -> FastAPI:
     app.include_router(home.router)
     app.include_router(auth.router)
     app.include_router(users.router)
+    app.include_router(companies.router)
+    app.include_router(contacts.router)
     return app
 
 

@@ -14,8 +14,14 @@
     <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
       <div class="flex items-center gap-6">
         <a href="/" class="text-lg font-semibold text-indigo-600">{{ app_name }}</a>
-        {% if user and user.is_admin %}
-          <a href="/users" class="text-sm text-slate-600 hover:text-slate-900">Users</a>
+        {% if user %}
+          {% set path = request.url.path %}
+          {% set nav_links = [("/companies", "Companies"), ("/contacts", "Contacts")] %}
+          {% if user.is_admin %}{% set nav_links = nav_links + [("/users", "Users")] %}{% endif %}
+          {% for href, label in nav_links %}
+            <a href="{{ href }}"
+               class="text-sm {{ 'font-medium text-slate-900' if path.startswith(href) else 'text-slate-600 hover:text-slate-900' }}">{{ label }}</a>
+          {% endfor %}
         {% endif %}
       </div>
       {% if user %}

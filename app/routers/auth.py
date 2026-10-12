@@ -10,7 +10,8 @@ from app.core.database import DbSession
 from app.core.deps import SESSION_USER_KEY
 from app.core.templating import templates
 from app.models import User
-from app.schemas.user import SignupForm, first_error_message
+from app.schemas.common import first_error_message
+from app.schemas.user import SignupForm
 from app.services import user_service
 
 router = APIRouter()

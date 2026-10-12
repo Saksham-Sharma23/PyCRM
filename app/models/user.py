@@ -1,11 +1,16 @@
 """User accounts: the people who log in to the CRM."""
 
 from enum import StrEnum
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Boolean, Enum, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin
+
+if TYPE_CHECKING:
+    from app.models.company import Company
+    from app.models.contact import Contact
 
 
 class UserRole(StrEnum):
@@ -29,6 +34,9 @@ class User(TimestampMixin, Base):
         default=UserRole.SALES_REP,
     )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+
+    companies: Mapped[list["Company"]] = relationship(back_populates="owner")
+    contacts: Mapped[list["Contact"]] = relationship(back_populates="owner")
 
     @property
     def is_admin(self) -> bool:

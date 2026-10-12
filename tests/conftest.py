@@ -9,12 +9,12 @@ from collections.abc import Callable, Iterator
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import Engine, create_engine
+from sqlalchemy import Engine, create_engine, event
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.main import app
-from app.models import Base, User, UserRole
+from app.models import Base, Company, Contact, User, UserRole
 from app.services import user_service
 
 TEST_DATABASE_URL = os.environ.get(
@@ -73,6 +73,70 @@ def make_user(db: Session) -> Callable[..., User]:
         return user_service.create_user(db, name=name, email=email, password=password, role=role)
 
     return _make_user
+
+
+@pytest.fixture
+def admin(make_user) -> User:
+    return make_user(name="Ada Admin", email="admin@example.com", role=UserRole.ADMIN)
+
+
+@pytest.fixture
+def rep(make_user) -> User:
+    return make_user(name="Rex Rep", email="rep@example.com")
+
+
+@pytest.fixture
+def other_rep(make_user) -> User:
+    return make_user(name="Olive Other", email="other@example.com")
+
+
+@pytest.fixture
+def make_company(db: Session) -> Callable[..., Company]:
+    def _make_company(owner: User, name: str = "Acme Inc", **fields) -> Company:
+        company = Company(name=name, owner_id=owner.id, **fields)
+        db.add(company)
+        db.commit()
+        db.refresh(company)
+        return company
+
+    return _make_company
+
+
+@pytest.fixture
+def make_contact(db: Session) -> Callable[..., Contact]:
+    def _make_contact(
+        owner: User,
+        first_name: str = "Jane",
+        last_name: str = "Doe",
+        company: Company | None = None,
+        **fields,
+    ) -> Contact:
+        contact = Contact(
+            first_name=first_name,
+            last_name=last_name,
+            company_id=company.id if company else None,
+            owner_id=owner.id,
+            **fields,
+        )
+        db.add(contact)
+        db.commit()
+        db.refresh(contact)
+        return contact
+
+    return _make_contact
+
+
+@pytest.fixture
+def count_queries(engine: Engine) -> Iterator[list[str]]:
+    """Collects every SQL statement run while the test is active."""
+    statements: list[str] = []
+
+    def record(conn, cursor, statement, parameters, context, executemany):
+        statements.append(statement)
+
+    event.listen(engine, "before_cursor_execute", record)
+    yield statements
+    event.remove(engine, "before_cursor_execute", record)
 
 
 @pytest.fixture

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Contacts · {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between">
+  <h1 class="text-2xl font-semibold">Contacts</h1>
+  <a href="/contacts/new" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">New contact</a>
+</div>
+
+<form method="get" action="/contacts" class="mt-6 flex flex-wrap gap-3"
+      hx-get="/contacts" hx-target="#results" hx-push-url="true"
+      hx-trigger="input delay:300ms, submit">
+  <input type="search" name="q" value="{{ q }}" placeholder="Search name, email, job title or company…" aria-label="Search contacts"
+         class="w-full max-w-sm rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none">
+  <select name="company_id" aria-label="Filter by company" class="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+    <option value="">All companies</option>
+    {% for company in companies %}
+      <option value="{{ company.id }}" {% if company.id == selected_company %}selected{% endif %}>{{ company.name }}</option>
+    {% endfor %}
+  </select>
+  <noscript><button class="rounded-lg border px-3 py-2 text-sm">Search</button></noscript>
+</form>
+
+<div id="results" class="mt-4">
+  {% include "partials/contact_results.html" %}
+</div>
+{% endblock %}

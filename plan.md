@@ -38,18 +38,20 @@ Each phase ends with a working app and a git commit.
 - [x] Test database setup and auth tests (28 tests passing)
 - [x] End-to-end check: real server + real Postgres, 25 HTTP checks (signup, logout, login, roles, deactivate, 403/404 pages)
 - [ ] Commit
-- [ ] Your machine: start the `postgresql-x64-18` service (admin), create the `pycrm` user + `pycrm` and `pycrm_test` databases, run `alembic upgrade head`
-- [ ] Click through it yourself in a browser
+- [x] Your machine: start the `postgresql-x64-18` service (admin), create the `pycrm` user + `pycrm` and `pycrm_test` databases, run `alembic upgrade head`
+- [x] Click through it yourself in a browser
 
 **Done when:** protected pages redirect to login, and auth tests pass.
 
 ## Phase 2 — Companies & Contacts
-- [ ] `Company` and `Contact` models and migration
-- [ ] Create, view, edit, delete for both
-- [ ] List pages with search, filters and pagination
-- [ ] Detail pages (a company shows its contacts)
-- [ ] Ownership rules: reps see their own records, admins see all
-- [ ] Tests
+- [x] `Company` and `Contact` models and migration (contacts kept, unlinked, when their company is deleted)
+- [x] Create, view, edit, delete for both
+- [x] List pages with HTMX live search, filters (industry / company) and pagination
+- [x] Detail pages (a company shows its contacts, with "Add contact")
+- [x] Ownership rules: reps see their own records, admins see all (one `visible_to()` helper)
+- [x] Tests (79 passing, including N+1 query-count guards) + 27-check end-to-end run on a real server
+- [ ] Click through it yourself in a browser
+- [ ] Commit
 
 **Done when:** a rep can manage only their own records, and an admin sees everything.
 
@@ -116,3 +118,7 @@ Each phase ends with a working app and a git commit.
 | 2026-10-12 | First user to sign up becomes admin | No separate admin-creation script needed; easy to explain |
 | 2026-10-12 | Roles stored as VARCHAR, not a native Postgres enum | Adding a role later needs no enum migration |
 | 2026-10-12 | Tests run in a rolled-back transaction on a `pycrm_test` DB | Fast, isolated tests against the real database engine |
+| 2026-10-12 | Deleting a company keeps its contacts (`ON DELETE SET NULL`) | Deleting people because their company was removed would surprise users |
+| 2026-10-12 | Ownership enforced by one `visible_to()` helper in the service layer | One place to get right and test; forgetting a filter in a route can't leak data |
+| 2026-10-12 | Other users' records return 404, not 403 | Doesn't reveal that the record exists |
+| 2026-10-12 | OFFSET pagination, 20 per page | Simple and fine at CRM scale; keyset pagination only needed for huge tables |
